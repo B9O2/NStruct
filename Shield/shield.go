@@ -6,7 +6,7 @@ type resMeta struct {
 
 type execMeta struct {
 	response chan resMeta
-	f        func() error
+	f        func()
 }
 
 type Shield struct {
@@ -16,14 +16,12 @@ type Shield struct {
 func (s *Shield) handle() {
 	for {
 		exec := <-s.execChan
-		err := exec.f()
-		exec.response <- resMeta{
-			err: err,
-		}
+		exec.f()
+		exec.response <- resMeta{}
 	}
 }
 
-func (s *Shield) Protect(f func() error) (err error) {
+func (s *Shield) Protect(f func()) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = r.(error)
