@@ -14,9 +14,10 @@ type Shield struct {
 }
 
 func (s *Shield) handle() {
-	for {
-		exec := <-s.execChan
-		exec.f()
+	for exec := range s.execChan {
+		if exec.f != nil {
+			exec.f()
+		}
 		exec.response <- resMeta{}
 	}
 }
